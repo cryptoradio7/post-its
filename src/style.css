@@ -1,0 +1,105 @@
+/* Style global des post-its */
+
+/* Fenêtre post-it */
+.note-window {
+    border-radius: 6px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Barre de titre custom */
+.note-titlebar {
+    padding: 4px 8px;
+    border-radius: 6px 6px 0 0;
+    min-height: 28px;
+}
+
+/* Bouton fermer */
+.note-close-btn {
+    padding: 0px 6px;
+    min-width: 20px;
+    min-height: 20px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(0, 0, 0, 0.12);
+    color: #444;
+    font-weight: bold;
+    font-size: 12px;
+}
+.note-close-btn:hover {
+    background: rgba(200, 50, 50, 0.7);
+    color: white;
+}
+
+/* Bouton + (créer) */
+.note-add-btn {
+    padding: 0px 8px;
+    min-width: 20px;
+    min-height: 20px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(0, 0, 0, 0.08);
+    color: #444;
+    font-size: 14px;
+}
+.note-add-btn:hover {
+    background: rgba(0, 0, 0, 0.18);
+}
+
+/* Zone texte */
+.note-textview {
+    font-family: "Cantarell", "Noto Sans", sans-serif;
+    font-size: 11pt;
+    padding: 8px;
+    border: none;
+    background: transparent;
+    color: #2D2D2D;
+}
+.note-textview text {
+    background: transparent;
+    color: #2D2D2D;
+}
+
+/* Ronds de couleur dans la barre de titre */
+.color-dot {
+    min-width: 16px;
+    min-height: 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    padding: 0;
+    margin: 2px;
+    background-image: none;
+    box-shadow: none;
+}
+.color-dot:hover {
+    border: 2px solid rgba(0, 0, 0, 0.6);
+    background-image: none;
+}
+.dot-jaune, .dot-jaune:hover { background-color: #FDFD96; background-image: none; }
+.dot-vert, .dot-vert:hover { background-color: #77DD77; background-image: none; }
+.dot-bleu, .dot-bleu:hover { background-color: #AEC6CF; background-image: none; }
+.dot-rose, .dot-rose:hover { background-color: #FFB7CE; background-image: none; }
+
+/* Couleurs de fond */
+.color-jaune { background-color: #FDFD96; }
+.color-vert { background-color: #77DD77; }
+.color-bleu { background-color: #AEC6CF; }
+.color-rose { background-color: #FFB7CE; }
+
+/* Titlebars — version plus foncée */
+.titlebar-jaune { background-color: #E8E870; }
+.titlebar-vert { background-color: #5CBB5C; }
+.titlebar-bleu { background-color: #8AAFC0; }
+.titlebar-rose { background-color: #E89DB5; }
+
+/* Fenêtre de contrôle */
+.control-window {
+    background-color: #F5F5F5;
+    border-radius: 8px;
+}
+.control-title {
+    font-family: "Cantarell", sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: #444;
+    padding: 6px;
+}
