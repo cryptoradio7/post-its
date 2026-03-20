@@ -40,6 +40,10 @@ class NoteWindow(Gtk.Window):
         self._build_ui()
         self._apply_color()
         self._load_content()
+        # Positionner APRÈS show_all (sinon ignoré par GNOME/Wayland)
+        x = self.note_data.get("x", 200)
+        y = self.note_data.get("y", 200)
+        self.move(x, y)
 
     def _setup_window(self):
         self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
@@ -95,6 +99,11 @@ class NoteWindow(Gtk.Window):
         # Zone draggable (EventBox) — espace entre les ronds et les boutons
         drag_area = Gtk.EventBox()
         drag_area.set_hexpand(True)
+        drag_area.set_above_child(True)
+        # Label invisible pour donner une taille réelle à l'EventBox
+        drag_label = Gtk.Label(label=" ")
+        drag_label.set_hexpand(True)
+        drag_area.add(drag_label)
         drag_area.connect("button-press-event", self._on_title_press)
         drag_area.connect("motion-notify-event", self._on_title_motion)
         drag_area.connect("button-release-event", self._on_title_release)
@@ -203,10 +212,6 @@ class NoteWindow(Gtk.Window):
 
     # --- Resize via bords/coins ---
     def _on_window_motion(self, widget, event):
-        if self._resize_edge is not None:
-            self._do_resize(event.x_root, event.y_root)
-            return True
-
         edge = self._get_edge(event.x, event.y)
         gdk_win = self.get_window()
         if gdk_win is None:
@@ -225,61 +230,34 @@ class NoteWindow(Gtk.Window):
             return False
         edge = self._get_edge(event.x, event.y)
         if edge is not None:
-            self._resize_edge = edge
-            self._resize_origin = (event.x_root, event.y_root)
-            pos = self.get_position()
-            size = self.get_size()
-            self._resize_win_geom = (pos[0], pos[1], size[0], size[1])
+            self.begin_resize_drag(
+                edge,
+                event.button,
+                int(event.x_root),
+                int(event.y_root),
+                event.time,
+            )
             return True
         return False
 
     def _on_window_release(self, widget, event):
-        if self._resize_edge is not None:
-            self._resize_edge = None
-            return True
         return False
 
-    def _do_resize(self, x_root, y_root):
-        """Calcule la nouvelle géométrie pendant un resize."""
-        ox, oy = self._resize_origin
-        wx, wy, ww, wh = self._resize_win_geom
-        dx = x_root - ox
-        dy = y_root - oy
-        edge = self._resize_edge
-
-        new_x, new_y, new_w, new_h = wx, wy, ww, wh
-
-        if edge in (Gdk.WindowEdge.EAST, Gdk.WindowEdge.NORTH_EAST, Gdk.WindowEdge.SOUTH_EAST):
-            new_w = max(100, ww + int(dx))
-        if edge in (Gdk.WindowEdge.WEST, Gdk.WindowEdge.NORTH_WEST, Gdk.WindowEdge.SOUTH_WEST):
-            new_w = max(100, ww - int(dx))
-            new_x = wx + ww - new_w
-        if edge in (Gdk.WindowEdge.SOUTH, Gdk.WindowEdge.SOUTH_EAST, Gdk.WindowEdge.SOUTH_WEST):
-            new_h = max(100, wh + int(dy))
-        if edge in (Gdk.WindowEdge.NORTH, Gdk.WindowEdge.NORTH_EAST, Gdk.WindowEdge.NORTH_WEST):
-            new_h = max(100, wh - int(dy))
-            new_y = wy + wh - new_h
-
-        self.move(new_x, new_y)
-        self.resize(new_w, new_h)
-
-    # --- Drag par barre de titre ---
+    # --- Drag par barre de titre (via begin_move_drag, compatible Wayland) ---
     def _on_title_press(self, widget, event):
         if event.button == 1:
-            self._drag_offset = (event.x_root, event.y_root)
-            win_pos = self.get_position()
-            self._drag_win_origin = (win_pos[0], win_pos[1])
+            self.begin_move_drag(
+                event.button,
+                int(event.x_root),
+                int(event.y_root),
+                event.time,
+            )
 
     def _on_title_motion(self, widget, event):
-        if self._drag_offset:
-            dx = event.x_root - self._drag_offset[0]
-            dy = event.y_root - self._drag_offset[1]
-            new_x = int(self._drag_win_origin[0] + dx)
-            new_y = int(self._drag_win_origin[1] + dy)
-            self.move(new_x, new_y)
+        pass
 
     def _on_title_release(self, widget, event):
-        self._drag_offset = None
+        pass
 
     # --- Configure (position/taille) ---
     def _on_configure(self, widget, event):

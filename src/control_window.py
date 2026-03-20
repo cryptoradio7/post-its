@@ -17,11 +17,7 @@ class ControlWindow(Gtk.Window):
         self.set_default_size(180, 60)
         self.set_resizable(False)
         self.set_keep_above(True)
-
-        # Positionner en haut à droite
-        screen = Gdk.Screen.get_default()
-        screen_w = screen.get_width()
-        self.move(screen_w - 200, 20)
+        self.set_type_hint(Gdk.WindowTypeHint.UTILITY)
         self.get_style_context().add_class("control-window")
 
         self.connect("delete-event", self._on_close)
@@ -43,7 +39,17 @@ class ControlWindow(Gtk.Window):
         hbox.pack_end(add_btn, False, False, 0)
 
         self.add(hbox)
+
+        # Sous Wayland, move() est ignoré. On utilise set_gravity + set_position
+        # pour demander au WM de placer la fenêtre au mieux.
+        self.set_gravity(Gdk.Gravity.NORTH_EAST)
+        self.set_position(Gtk.WindowPosition.NONE)
         self.show_all()
+
+        # Tenter move() — fonctionne sous X11, ignoré sous Wayland
+        screen = Gdk.Screen.get_default()
+        screen_w = screen.get_width()
+        self.move(screen_w - 200, 20)
 
     def _on_add(self, btn):
         self.app.create_new_note()
